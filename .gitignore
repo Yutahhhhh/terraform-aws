@@ -1,0 +1,5 @@
+.env
+output.*
+terraform/backend.hcl
+terraform/.terraform
+terraform/.terraform.lock.hcl

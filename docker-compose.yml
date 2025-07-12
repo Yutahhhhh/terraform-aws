@@ -1,0 +1,15 @@
+services:
+  terraform:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    platform: linux/amd64  # Apple Siliconの場合
+    volumes:
+      - "./:/app"
+      - "~/.aws:/root/.aws"
+    working_dir: /app
+    env_file:
+      - .env
+    entrypoint: bash
+    environment:
+      AWS_SDK_LOAD_CONFIG: 1
