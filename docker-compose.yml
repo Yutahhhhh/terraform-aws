@@ -6,6 +6,7 @@ services:
     platform: linux/amd64  # Apple Siliconの場合
     volumes:
       - "./:/app"
+      - "./.git:/app/.git"
       - "~/.aws:/root/.aws"
     working_dir: /app
     env_file:
