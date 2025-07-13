@@ -187,6 +187,6 @@ fi
 echo ""
 echo "💡 注意事項:"
 echo "  - Terraformのstate ファイルは削除されました"
-echo "  - 今後terraform操作を行う場合は、setup-terraform-backend.sh を再実行してください"
+echo "  - 今後terraform操作を行う場合は、setup.sh を再実行してください"
 echo "  - ローカルの .terraform ディレクトリも削除することを推奨します:"
 echo "    rm -rf .terraform/ .terraform.lock.hcl"
