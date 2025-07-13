@@ -14,17 +14,17 @@ else
 fi
 
 # --- .envファイルから環境変数が読み込まれます ---
-# APP_NAME: アプリケーション名 (リソース名のプレフィックスとして使用)
+# TF_VAR_project_name: アプリケーション名 (リソース名のプレフィックスとして使用)
 # AWS_REGION: AWSリージョン
 # AWS_PROFILE: AWSプロファイル（オプション）
 
 # 必要な環境変数が設定されているかチェック
-: "${APP_NAME?エラー: 環境変数 APP_NAME が設定されていません。.envファイルで定義してください。}"
+: "${TF_VAR_project_name?エラー: 環境変数 TF_VAR_project_name が設定されていません。.envファイルで定義してください。}"
 : "${AWS_REGION?エラー: 環境変数 AWS_REGION が設定されていません。.envファイルで定義してください。}"
 
 # リソース名を自動生成
-BUCKET_NAME="${APP_NAME}-terraform-state"
-DYNAMODB_TABLE_NAME="${APP_NAME}-terraform-state-locks"
+BUCKET_NAME="${TF_VAR_project_name}-terraform-state"
+DYNAMODB_TABLE_NAME="${TF_VAR_project_name}-terraform-state-locks"
 
 # AWSコマンドのラッパー関数を定義
 # AWS_PROFILEが設定されていれば --profile 引数を付けて aws コマンドを実行する
@@ -46,7 +46,7 @@ set -e
 
 echo "==================== Terraform Backend セットアップ ===================="
 echo "${PROFILE_MSG}"
-echo "🚀 アプリケーション名: ${APP_NAME}"
+echo "🚀 アプリケーション名: ${TF_VAR_project_name}"
 echo "🌐 リージョン: ${AWS_REGION}"
 echo "📦 S3バケット名: ${BUCKET_NAME}"
 echo "🔒 DynamoDBテーブル名: ${DYNAMODB_TABLE_NAME}"

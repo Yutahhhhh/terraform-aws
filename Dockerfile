@@ -26,12 +26,6 @@ RUN curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2
     && ./aws/install \
     && rm -rf awscliv2.zip aws
 
-# awsdac
-RUN wget "https://github.com/dac-inc/awsdac/releases/download/v${AWSDAC_VERSION}/awsdac_${AWSDAC_VERSION}_linux_amd64.tar.gz" \
-    && tar -xzvf awsdac_${AWSDAC_VERSION}_linux_amd64.tar.gz \
-    && mv awsdac /usr/local/bin/ \
-    && rm awsdac_${AWSDAC_VERSION}_linux_amd64.tar.gz
-
 WORKDIR /app
 
 CMD ["/bin/bash"]
