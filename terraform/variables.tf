@@ -26,3 +26,9 @@ variable "vpc_cidr" {
   type        = string
   default     = "10.0.0.0/16"
 }
+
+variable "enable_nat_gateway" {
+  description = "NAT Gatewayを有効にするかどうか（学習用途ではfalseに設定してコストを削減）"
+  type        = bool
+  default     = false
+}
