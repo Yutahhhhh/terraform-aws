@@ -81,3 +81,46 @@ output "alb_security_group_id" {
   description = "ALB Security Group ID（参照用）"
   value       = aws_security_group.alb.id
 }
+
+# ECS関連の出力（第4回で追加）
+output "ecs_cluster_id" {
+  description = "ECS Cluster ID"
+  value       = aws_ecs_cluster.main.id
+}
+
+output "ecs_cluster_arn" {
+  description = "ECS Cluster ARN"
+  value       = aws_ecs_cluster.main.arn
+}
+
+output "ecs_execution_role_arn" {
+  description = "ECS Execution Role ARN"
+  value       = aws_iam_role.ecs_execution_role.arn
+}
+
+output "ecs_task_role_arn" {
+  description = "ECS Task Role ARN"
+  value       = aws_iam_role.ecs_task_role.arn
+}
+
+# ECR
+output "ecr_repository_url" {
+  description = "ECR Repository URL"
+  value       = aws_ecr_repository.app.repository_url
+}
+
+output "ecr_repository_arn" {
+  description = "ECR Repository ARN"
+  value       = aws_ecr_repository.app.arn
+}
+
+# CloudWatch Logs
+output "cloudwatch_log_group_name" {
+  description = "CloudWatch Log Group Name"
+  value       = aws_cloudwatch_log_group.ecs.name
+}
+
+output "cloudwatch_log_group_arn" {
+  description = "CloudWatch Log Group ARN"
+  value       = aws_cloudwatch_log_group.ecs.arn
+}
