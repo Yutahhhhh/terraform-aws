@@ -75,7 +75,7 @@ resource "aws_iam_role" "ecs_task_role" {
   }
 }
 
-# ECS Task Role用のカスタムポリシー（アプリケーション固有の権限）
+# ECS Task Role用のカスタムポリシー
 resource "aws_iam_role_policy" "ecs_task_role_policy" {
   name = "${var.project_name}-${var.environment}-ecs-task-policy"
   role = aws_iam_role.ecs_task_role.id
@@ -90,6 +90,13 @@ resource "aws_iam_role_policy" "ecs_task_role_policy" {
           "logs:PutLogEvents"
         ]
         Resource = "${aws_cloudwatch_log_group.ecs.arn}:*"
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "secretsmanager:GetSecretValue"
+        ]
+        Resource = aws_secretsmanager_secret.db_credentials.arn
       }
     ]
   })

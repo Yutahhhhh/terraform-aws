@@ -32,3 +32,33 @@ variable "enable_nat_gateway" {
   type        = bool
   default     = false
 }
+
+variable "db_instance_class" {
+  description = "RDSインスタンスクラス"
+  type        = string
+  default     = "db.t3.micro"  # 開発環境用の最小構成
+}
+
+variable "db_allocated_storage" {
+  description = "RDSストレージサイズ(GB)"
+  type        = number
+  default     = 20
+}
+
+variable "db_engine_version" {
+  description = "PostgreSQLのバージョン"
+  type        = string
+  default     = "15.8"
+}
+
+variable "db_username" {
+  description = "マスターユーザー名"
+  type        = string
+  default     = "postgres"
+}
+
+variable "enable_db_multi_az" {
+  description = "Multi-AZを有効にするかどうか"
+  type        = bool
+  default     = false  # 開発環境ではコスト削減のためfalse
+}
