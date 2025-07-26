@@ -124,3 +124,39 @@ output "cloudwatch_log_group_arn" {
   description = "CloudWatch Log Group ARN"
   value       = aws_cloudwatch_log_group.ecs.arn
 }
+
+# RDS関連の出力（第5回で追加）
+output "rds_endpoint" {
+  description = "RDS エンドポイント"
+  value       = aws_db_instance.main.endpoint
+}
+
+output "rds_address" {
+  description = "RDS アドレス（ホスト名）"
+  value       = aws_db_instance.main.address
+}
+
+output "rds_port" {
+  description = "RDS ポート番号"
+  value       = aws_db_instance.main.port
+}
+
+output "rds_database_name" {
+  description = "RDS データベース名"
+  value       = aws_db_instance.main.db_name
+}
+
+output "db_subnet_group_id" {
+  description = "DB Subnet Group ID"
+  value       = aws_db_subnet_group.main.id
+}
+
+output "db_secret_arn" {
+  description = "Secrets Manager Secret ARN"
+  value       = aws_secretsmanager_secret.db_credentials.arn
+}
+
+output "db_secret_name" {
+  description = "Secrets Manager Secret Name"
+  value       = aws_secretsmanager_secret.db_credentials.name
+}
