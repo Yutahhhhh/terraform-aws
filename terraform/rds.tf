@@ -20,6 +20,10 @@ resource "random_password" "db_password" {
 resource "aws_secretsmanager_secret" "db_credentials" {
   name = "${var.project_name}-${var.environment}-db-credentials"
 
+  # 削除時の復旧期間を0日に設定（即座に削除）
+  # これはハンズオンで毎回destroyするため
+  recovery_window_in_days = 0
+
   tags = {
     Name = "${var.project_name}-${var.environment}-db-credentials"
   }

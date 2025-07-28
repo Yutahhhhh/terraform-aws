@@ -160,3 +160,19 @@ output "db_secret_name" {
   description = "Secrets Manager Secret Name"
   value       = aws_secretsmanager_secret.db_credentials.name
 }
+
+# ECS Service関連（第7回で追加）
+output "ecs_service_name" {
+  description = "ECS Service名"
+  value       = aws_ecs_service.app.name
+}
+
+output "ecs_task_definition_arn" {
+  description = "Task Definition ARN"
+  value       = aws_ecs_task_definition.app.arn
+}
+
+output "ecs_task_definition_family" {
+  description = "Task Definition Family"
+  value       = aws_ecs_task_definition.app.family
+}
