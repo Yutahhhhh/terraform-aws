@@ -62,3 +62,22 @@ variable "enable_db_multi_az" {
   type        = bool
   default     = false  # 開発環境ではコスト削減のためfalse
 }
+
+# ECS、コンテナ関連
+variable "task_cpu" {
+  description = "タスクのCPU単位（256 = 0.25 vCPU）"
+  type        = string
+  default     = "256"
+}
+
+variable "task_memory" {
+  description = "タスクのメモリ（MB）"
+  type        = string
+  default     = "512"
+}
+
+variable "app_count" {
+  description = "実行するタスク数"
+  type        = number
+  default     = 2
+}

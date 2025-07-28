@@ -75,6 +75,25 @@ resource "aws_iam_role" "ecs_task_role" {
   }
 }
 
+# ECS Execution Role用のカスタムポリシー
+resource "aws_iam_role_policy" "ecs_execution_role_policy" {
+  name = "${var.project_name}-${var.environment}-ecs-execution-policy"
+  role = aws_iam_role.ecs_execution_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "secretsmanager:GetSecretValue"
+        ]
+        Resource = aws_secretsmanager_secret.db_credentials.arn
+      }
+    ]
+  })
+}
+
 # ECS Task Role用のカスタムポリシー
 resource "aws_iam_role_policy" "ecs_task_role_policy" {
   name = "${var.project_name}-${var.environment}-ecs-task-policy"
