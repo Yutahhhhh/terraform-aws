@@ -81,3 +81,22 @@ variable "app_count" {
   type        = number
   default     = 2
 }
+
+// VPCエンドポイント関連
+variable "enable_vpc_endpoints" {
+  description = "VPCエンドポイントを有効にするかどうか"
+  type        = bool
+  default     = true
+}
+
+variable "enable_vpc_flow_logs" {
+  description = "VPC Flow Logsを有効にするかどうか"
+  type        = bool
+  default     = true
+}
+
+variable "flow_logs_retention_days" {
+  description = "VPC Flow Logsの保持期間（日）"
+  type        = number
+  default     = 7
+}

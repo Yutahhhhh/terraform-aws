@@ -10,4 +10,4 @@ vpc_cidr = "10.0.0.0/16"
 
 # NAT Gateway設定（学習用途では false に設定してコストを削減）
 # 本格的にプライベートサブネットからのアウトバウンド通信が必要な場合は true に設定
-enable_nat_gateway = true
+enable_nat_gateway = false

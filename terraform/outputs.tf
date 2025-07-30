@@ -176,3 +176,39 @@ output "ecs_task_definition_family" {
   description = "Task Definition Family"
   value       = aws_ecs_task_definition.app.family
 }
+
+# VPC Endpoints関連の出力（第8回で追加）
+output "vpc_endpoint_s3_id" {
+  description = "S3 VPC Endpoint ID"
+  value       = try(aws_vpc_endpoint.s3[0].id, "")
+}
+
+output "vpc_endpoint_ecr_api_id" {
+  description = "ECR API VPC Endpoint ID"
+  value       = try(aws_vpc_endpoint.ecr_api[0].id, "")
+}
+
+output "vpc_endpoint_ecr_dkr_id" {
+  description = "ECR DKR VPC Endpoint ID"
+  value       = try(aws_vpc_endpoint.ecr_dkr[0].id, "")
+}
+
+output "vpc_endpoint_logs_id" {
+  description = "CloudWatch Logs VPC Endpoint ID"
+  value       = try(aws_vpc_endpoint.logs[0].id, "")
+}
+
+output "vpc_endpoint_secrets_manager_id" {
+  description = "Secrets Manager VPC Endpoint ID"
+  value       = try(aws_vpc_endpoint.secrets_manager[0].id, "")
+}
+
+output "vpc_flow_logs_id" {
+  description = "VPC Flow Logs ID"
+  value       = try(aws_flow_log.main[0].id, "")
+}
+
+output "vpc_flow_logs_group_name" {
+  description = "VPC Flow Logs CloudWatch Log Group名"
+  value       = try(aws_cloudwatch_log_group.vpc_flow_logs[0].name, "")
+}
