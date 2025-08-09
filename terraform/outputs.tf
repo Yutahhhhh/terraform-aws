@@ -212,3 +212,60 @@ output "vpc_flow_logs_group_name" {
   description = "VPC Flow Logs CloudWatch Log Group名"
   value       = try(aws_cloudwatch_log_group.vpc_flow_logs[0].name, "")
 }
+
+# S3関連の出力（第9回で追加）
+output "frontend_s3_bucket_name" {
+  description = "フロントエンド用S3バケット名"
+  value       = aws_s3_bucket.frontend.id
+}
+
+output "frontend_s3_bucket_arn" {
+  description = "フロントエンド用S3バケットARN"
+  value       = aws_s3_bucket.frontend.arn
+}
+
+output "frontend_s3_bucket_domain_name" {
+  description = "S3バケットのドメイン名"
+  value       = aws_s3_bucket.frontend.bucket_domain_name
+}
+
+# CloudFront関連の出力
+output "cloudfront_distribution_id" {
+  description = "CloudFrontディストリビューションID"
+  value       = aws_cloudfront_distribution.frontend.id
+}
+
+output "cloudfront_distribution_arn" {
+  description = "CloudFrontディストリビューションARN"
+  value       = aws_cloudfront_distribution.frontend.arn
+}
+
+output "cloudfront_distribution_domain_name" {
+  description = "CloudFrontディストリビューションのドメイン名"
+  value       = aws_cloudfront_distribution.frontend.domain_name
+}
+
+output "cloudfront_oac_id" {
+  description = "CloudFront OAC ID"
+  value       = aws_cloudfront_origin_access_control.frontend.id
+}
+
+# WAF関連の出力（第10回で追加）
+output "waf_web_acl_id" {
+  description = "WAF WebACL ID"
+  value       = try(aws_wafv2_web_acl.main[0].id, "")
+}
+
+output "waf_web_acl_arn" {
+  description = "WAF WebACL ARN"
+  value       = try(aws_wafv2_web_acl.main[0].arn, "")
+}
+
+# セキュリティ設定の確認用
+output "cors_allowed_origins" {
+  description = "CORS許可されているオリジン"
+  value = concat(
+    ["https://${aws_cloudfront_distribution.frontend.domain_name}"],
+    var.allowed_origins
+  )
+}

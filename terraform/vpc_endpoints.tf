@@ -113,6 +113,13 @@ resource "aws_cloudwatch_log_group" "vpc_flow_logs" {
   name              = "/aws/vpc/${var.project_name}-${var.environment}"
   retention_in_days = var.flow_logs_retention_days
 
+  # 削除時にログデータも強制削除
+  skip_destroy = false
+
+  lifecycle {
+    ignore_changes = [name]
+  }
+
   tags = {
     Name = "${var.project_name}-${var.environment}-vpc-flow-logs"
   }

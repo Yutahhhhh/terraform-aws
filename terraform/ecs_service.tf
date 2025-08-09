@@ -26,12 +26,9 @@ resource "aws_ecs_service" "app" {
     rollback = true
   }
 
-  lifecycle {
-    ignore_changes = [task_definition]
-  }
-
   depends_on = [
     aws_lb_listener.http,
+    aws_lb_listener_rule.api,
     aws_iam_role_policy.ecs_task_role_policy
   ]
 
@@ -71,6 +68,17 @@ resource "aws_ecs_task_definition" "app" {
         {
           name  = "PORT"
           value = "3000"
+        },
+        {
+          name  = "ALLOWED_ORIGINS"
+          value = join(",", concat(
+            ["https://${aws_cloudfront_distribution.frontend.domain_name}"],
+            var.allowed_origins
+          ))
+        },
+        {
+          name  = "ENABLE_SECURITY_HEADERS"
+          value = var.enable_security_headers ? "true" : "false"
         }
       ]
 

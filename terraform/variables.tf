@@ -100,3 +100,72 @@ variable "flow_logs_retention_days" {
   type        = number
   default     = 7
 }
+
+# CloudFront関連
+variable "frontend_domain_name" {
+  description = "フロントエンドのドメイン名（オプション）"
+  type        = string
+  default     = ""
+}
+
+variable "frontend_certificate_arn" {
+  description = "CloudFront用のSSL証明書ARN（us-east-1リージョン）"
+  type        = string
+  default     = ""
+}
+
+variable "enable_cloudfront_logging" {
+  description = "CloudFrontのアクセスログを有効にするか"
+  type        = bool
+  default     = false
+}
+
+variable "cloudfront_price_class" {
+  description = "CloudFrontの価格クラス"
+  type        = string
+  default     = "PriceClass_100"  # 日本を指定してコスト削減
+}
+
+# CORS設定
+variable "allowed_origins" {
+  description = "CORS許可するオリジンのリスト"
+  type        = list(string)
+  default     = []  # 実際の値はterraform.tfvarsで設定
+}
+
+variable "enable_waf" {
+  description = "WAFを有効にするかどうか"
+  type        = bool
+  default     = true
+}
+
+variable "api_rate_limit" {
+  description = "APIレート制限（5分間のリクエスト数）"
+  type        = number
+  default     = 2000
+}
+
+variable "enable_security_headers" {
+  description = "セキュリティヘッダーを有効にするかどうか"
+  type        = bool
+  default     = true
+}
+
+# ALB SSL証明書関連
+variable "alb_certificate_arn" {
+  description = "ALB用のSSL証明書ARN（リージョン内）"
+  type        = string
+  default     = ""
+}
+
+variable "alb_domain_name" {
+  description = "ALBのドメイン名（オプション）"
+  type        = string
+  default     = ""
+}
+
+variable "enable_https_redirect" {
+  description = "HTTPからHTTPSへのリダイレクトを有効にするかどうか"
+  type        = bool
+  default     = true
+}
