@@ -11,3 +11,17 @@ vpc_cidr = "10.0.0.0/16"
 # NAT Gateway設定（学習用途では false に設定してコストを削減）
 # 本格的にプライベートサブネットからのアウトバウンド通信が必要な場合は true に設定
 enable_nat_gateway = false
+
+# CloudFrontのドメインは自動的に追加されるため、追加のオリジンのみ指定
+allowed_origins = [
+  # "https://example.com"  # カスタムドメインを使用する場合
+]
+
+# WAFを有効化
+enable_waf = true
+
+# APIレート制限（5分間）
+api_rate_limit = 2000
+
+# セキュリティヘッダーを有効化
+enable_security_headers = true
