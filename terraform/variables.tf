@@ -169,3 +169,40 @@ variable "enable_https_redirect" {
   type        = bool
   default     = true
 }
+
+# 監視とアラーム関連
+variable "enable_alb_access_logs" {
+  description = "ALBアクセスログを有効にするか"
+  type        = bool
+  default     = true
+}
+
+variable "enable_xray_tracing" {
+  description = "X-Rayトレーシングを有効にするか"
+  type        = bool
+  default     = true
+}
+
+variable "alarm_email" {
+  description = "アラーム通知先のメールアドレス"
+  type        = string
+  default     = ""
+}
+
+variable "cpu_utilization_threshold" {
+  description = "CPU使用率のアラーム閾値（%）"
+  type        = number
+  default     = 80
+}
+
+variable "memory_utilization_threshold" {
+  description = "メモリ使用率のアラーム閾値（%）"
+  type        = number
+  default     = 80
+}
+
+variable "error_rate_threshold" {
+  description = "エラー率のアラーム閾値（%）"
+  type        = number
+  default     = 5
+}

@@ -60,27 +60,43 @@ resource "aws_ecs_task_definition" "app" {
         }
       ]
 
-      environment = [
-        {
-          name  = "NODE_ENV"
-          value = "production"
-        },
-        {
-          name  = "PORT"
-          value = "3000"
-        },
-        {
-          name  = "ALLOWED_ORIGINS"
-          value = join(",", concat(
-            ["https://${aws_cloudfront_distribution.frontend.domain_name}"],
-            var.allowed_origins
-          ))
-        },
-        {
-          name  = "ENABLE_SECURITY_HEADERS"
-          value = var.enable_security_headers ? "true" : "false"
-        }
-      ]
+      environment = concat(
+        [
+          {
+            name  = "NODE_ENV"
+            value = "production"
+          },
+          {
+            name  = "PORT"
+            value = "3000"
+          },
+          {
+            name  = "ALLOWED_ORIGINS"
+            value = join(",", concat(
+              ["https://${aws_cloudfront_distribution.frontend.domain_name}"],
+              var.allowed_origins
+            ))
+          },
+          {
+            name  = "ENABLE_SECURITY_HEADERS"
+            value = var.enable_security_headers ? "true" : "false"
+          }
+        ],
+        [
+          {
+            name  = "AWS_XRAY_TRACING_NAME"
+            value = "${var.project_name}-${var.environment}"
+          },
+          {
+            name  = "AWS_XRAY_CONTEXT_MISSING"
+            value = "LOG_ERROR"
+          },
+          {
+            name  = "_X_AMZN_TRACE_ID"
+            value = ""  # ALBから自動的に設定される
+          }
+        ]
+      )
 
       secrets = [
         {

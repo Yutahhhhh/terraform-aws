@@ -106,22 +106,36 @@ resource "aws_vpc_endpoint" "secrets_manager" {
   }
 }
 
+# X-Ray Endpoint
+resource "aws_vpc_endpoint" "xray" {
+  count = var.enable_vpc_endpoints && var.enable_xray_tracing ? 1 : 0
+
+  vpc_id              = aws_vpc.main.id
+  service_name        = "com.amazonaws.${var.aws_region}.xray"
+  vpc_endpoint_type   = "Interface"
+  subnet_ids          = aws_subnet.private[*].id
+  security_group_ids  = [aws_security_group.vpc_endpoints.id]
+  private_dns_enabled = true
+
+  tags = {
+    Name = "${var.project_name}-${var.environment}-xray-endpoint"
+  }
+}
+
+
 # VPC Flow Logs用のCloudWatch Log Group
 resource "aws_cloudwatch_log_group" "vpc_flow_logs" {
   count = var.enable_vpc_flow_logs ? 1 : 0
 
-  name              = "/aws/vpc/${var.project_name}-${var.environment}"
+  name              = "/aws/vpc/${var.project_name}-${var.environment}-${formatdate("YYYYMMDD-hhmmss", timestamp())}"
   retention_in_days = var.flow_logs_retention_days
-
-  # 削除時にログデータも強制削除
-  skip_destroy = false
-
-  lifecycle {
-    ignore_changes = [name]
-  }
 
   tags = {
     Name = "${var.project_name}-${var.environment}-vpc-flow-logs"
+  }
+
+  lifecycle {
+    create_before_destroy = true
   }
 }
 
