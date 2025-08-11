@@ -126,7 +126,7 @@ resource "aws_cloudfront_distribution" "frontend" {
     cloudfront_default_certificate = var.frontend_certificate_arn == ""
     acm_certificate_arn            = var.frontend_certificate_arn != "" ? var.frontend_certificate_arn : null
     ssl_support_method             = var.frontend_certificate_arn != "" ? "sni-only" : null
-    minimum_protocol_version       = "TLSv1.2_2021"
+    minimum_protocol_version       = "TLSv1"
   }
 
   # ログ設定

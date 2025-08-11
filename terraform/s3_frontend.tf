@@ -60,6 +60,8 @@ resource "aws_s3_bucket_lifecycle_configuration" "cloudfront_logs" {
     id     = "delete-old-logs"
     status = "Enabled"
 
+    filter {}
+
     expiration {
       days = 30
     }

@@ -17,11 +17,22 @@ allowed_origins = [
   # "https://example.com"  # カスタムドメインを使用する場合
 ]
 
-# WAFを有効化
-enable_waf = true
+# WAFを無効化
+enable_waf = false
 
 # APIレート制限（5分間）
 api_rate_limit = 2000
 
 # セキュリティヘッダーを有効化
 enable_security_headers = true
+
+# ALBアクセスログを有効化
+enable_alb_access_logs = true
+
+# X-Rayトレーシングを有効化
+enable_xray_tracing = true
+
+# アラーム閾値
+cpu_utilization_threshold    = 80
+memory_utilization_threshold = 80
+error_rate_threshold        = 5

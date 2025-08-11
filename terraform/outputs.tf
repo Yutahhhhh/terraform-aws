@@ -269,3 +269,24 @@ output "cors_allowed_origins" {
     var.allowed_origins
   )
 }
+
+# 監視関連の出力 （第11回で追加）
+output "cloudwatch_dashboard_url" {
+  description = "CloudWatch Dashboard URL"
+  value       = "https://console.aws.amazon.com/cloudwatch/home?region=${var.aws_region}#dashboards:name=${aws_cloudwatch_dashboard.main.dashboard_name}"
+}
+
+output "xray_service_map_url" {
+  description = "X-Ray Service Map URL"
+  value       = var.enable_xray_tracing ? "https://console.aws.amazon.com/xray/home?region=${var.aws_region}#/service-map" : ""
+}
+
+output "sns_topic_arn" {
+  description = "SNS Topic ARN for alarms"
+  value       = aws_sns_topic.alarms.arn
+}
+
+output "alb_logs_bucket" {
+  description = "ALB Access Logs S3 Bucket"
+  value       = var.enable_alb_access_logs ? aws_s3_bucket.alb_logs[0].id : ""
+}

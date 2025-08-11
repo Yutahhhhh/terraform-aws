@@ -8,16 +8,22 @@ resource "aws_lb" "main" {
 
   enable_deletion_protection = false  # 開発環境では削除を許可
 
-  # ALBアクセスログの設定（オプション）
-  # access_logs {
-  #   bucket  = aws_s3_bucket.alb_logs.id
-  #   prefix  = "alb-access-logs"
-  #   enabled = true
-  # }
+  dynamic "access_logs" {
+    for_each = var.enable_alb_access_logs ? [1] : []
+    content {
+      bucket  = aws_s3_bucket.alb_logs[0].id
+      prefix  = "alb"
+      enabled = true
+    }
+  }
 
   tags = {
     Name = "${var.project_name}-${var.environment}-alb"
   }
+
+  depends_on = [
+    aws_s3_bucket_policy.alb_logs
+  ]
 }
 
 # Target Group for ECS Fargate
