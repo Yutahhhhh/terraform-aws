@@ -206,3 +206,22 @@ variable "error_rate_threshold" {
   type        = number
   default     = 5
 }
+
+# CI/CD関連
+variable "enable_github_oidc" {
+  description = "GitHub Actions OIDCを有効にするか"
+  type        = bool
+  default     = true
+}
+
+variable "artifact_retention_days" {
+  description = "build artifact の保持期間"
+  type        = number
+  default     = 30
+}
+
+variable "github_repository" {
+  description = "GitHubリポジトリ（例: username/repository-name）"
+  type        = string
+  default     = ""
+}
