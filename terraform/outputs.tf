@@ -290,3 +290,14 @@ output "alb_logs_bucket" {
   description = "ALB Access Logs S3 Bucket"
   value       = var.enable_alb_access_logs ? aws_s3_bucket.alb_logs[0].id : ""
 }
+
+# CI/CD関連の出力(第12回で追加)
+output "github_actions_role_arn" {
+  description = "GitHub Actions用IAMロールARN"
+  value       = var.enable_github_oidc ? aws_iam_role.github_actions[0].arn : ""
+}
+
+output "artifacts_bucket_name" {
+  description = "アーティファクト保存用S3バケット名"
+  value       = aws_s3_bucket.artifacts.id
+}
