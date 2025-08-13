@@ -1,8 +1,9 @@
 .env
 output.*
-terraform/backend.hcl
-terraform/.terraform
-terraform/.terraform.lock.hcl
-terraform/*.out
+**/core
+**/backend.hcl
+**/.terraform
+**/.terraform.lock.hcl
+**/*.out
 
 outputs

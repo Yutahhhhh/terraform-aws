@@ -120,7 +120,27 @@ docker-compose run --rm terraform ./graph.sh
 
 上記の手順で`terraform destroy`を実行してください。
 
-### 2. バックエンドリソースの削除
+**注意:** `terraform destroy`を実行しても、AWSが自動作成するCloudWatchロググループは残る場合があります。
+
+### 2. 残存CloudWatchロググループの削除
+
+`terraform destroy`後に残ったCloudWatchロググループを削除するには、以下のスクリプトを使用します：
+
+```bash
+# 特定環境のCloudWatchロググループを削除
+chmod +x cleanup-logs.sh
+./cleanup-logs.sh dev    # dev環境の場合
+./cleanup-logs.sh stg    # stg環境の場合  
+./cleanup-logs.sh prod   # prod環境の場合
+```
+
+このスクリプトは以下のロググループを削除します：
+- Container Insightsロググループ: `/aws/ecs/containerinsights/{project}-{env}-cluster/performance`
+- RDS PostgreSQLロググループ: `/aws/rds/instance/{project}-{env}-db/postgresql`
+- ECSアプリケーションロググループ: `/ecs/{project}-{env}`
+- VPCフローログ: `/aws/vpc/{project}-{env}*`
+
+### 3. バックエンドリソースの削除
 
 `setup.sh`で作成したS3バケットとDynamoDBテーブルを削除します。
 
