@@ -126,22 +126,39 @@ else
   echo "✅ DynamoDBテーブル「${DYNAMODB_TABLE_NAME}」を作成しました。"
 fi
 
-# --- backend.hcl ファイルの生成 ---
+# --- 環境別 backend.hcl ファイルの生成 ---
 echo ""
-echo "📝 backend.hcl ファイルを生成します..."
+echo "📝 環境別 backend.hcl ファイルを生成します..."
 
-BACKEND_CONFIG_PATH="${SCRIPT_DIR}/terraform/backend.hcl"
-
-# terraformディレクトリが存在しない場合は作成
-mkdir -p "${SCRIPT_DIR}/terraform"
-
-cat > "${BACKEND_CONFIG_PATH}" << EOF
+# 各環境のディレクトリを作成
+for ENV in dev stg prod; do
+  ENV_DIR="${SCRIPT_DIR}/terraform/environments/${ENV}"
+  mkdir -p "${ENV_DIR}"
+  
+  BACKEND_CONFIG_PATH="${ENV_DIR}/backend.hcl"
+  
+  cat > "${BACKEND_CONFIG_PATH}" << EOF
 bucket         = "${BUCKET_NAME}"
+key            = "${ENV}/terraform.tfstate"
 region         = "${AWS_REGION}"
+encrypt        = true
 dynamodb_table = "${DYNAMODB_TABLE_NAME}"
 EOF
 
-echo "✅ backend.hcl ファイルを生成しました: ${BACKEND_CONFIG_PATH}"
+  echo "✅ ${ENV} 環境の backend.hcl ファイルを生成しました: ${BACKEND_CONFIG_PATH}"
+done
+
+# 既存のbackend.hclファイルも更新（後方互換性のため）
+LEGACY_BACKEND_CONFIG_PATH="${SCRIPT_DIR}/terraform/backend.hcl"
+cat > "${LEGACY_BACKEND_CONFIG_PATH}" << EOF
+bucket         = "${BUCKET_NAME}"
+key            = "terraform.tfstate"
+region         = "${AWS_REGION}"
+encrypt        = true
+dynamodb_table = "${DYNAMODB_TABLE_NAME}"
+EOF
+
+echo "✅ レガシー backend.hcl ファイルを更新しました: ${LEGACY_BACKEND_CONFIG_PATH}"
 
 # --- 設定確認 ---
 echo ""

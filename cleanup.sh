@@ -174,6 +174,26 @@ if [ "$DYNAMODB_EXISTS" = true ]; then
   fi
 fi
 
+# --- backend.hcl ファイルの削除 ---
+echo ""
+echo "🗑️  backend.hcl ファイルを削除します..."
+
+# 環境別のbackend.hclファイルを削除
+for ENV in dev stg prod; do
+  BACKEND_CONFIG_PATH="${SCRIPT_DIR}/terraform/environments/${ENV}/backend.hcl"
+  if [ -f "${BACKEND_CONFIG_PATH}" ]; then
+    rm -f "${BACKEND_CONFIG_PATH}"
+    echo "✅ ${ENV} 環境の backend.hcl ファイルを削除しました: ${BACKEND_CONFIG_PATH}"
+  fi
+done
+
+# レガシーのbackend.hclファイルも削除
+LEGACY_BACKEND_CONFIG_PATH="${SCRIPT_DIR}/terraform/backend.hcl"
+if [ -f "${LEGACY_BACKEND_CONFIG_PATH}" ]; then
+  rm -f "${LEGACY_BACKEND_CONFIG_PATH}"
+  echo "✅ レガシー backend.hcl ファイルを削除しました: ${LEGACY_BACKEND_CONFIG_PATH}"
+fi
+
 echo ""
 echo "✅ Terraform Backend のクリーンアップが完了しました！"
 echo ""
@@ -184,9 +204,12 @@ fi
 if [ "$DYNAMODB_EXISTS" = true ]; then
   echo "  - DynamoDBテーブル: ${DYNAMODB_TABLE_NAME}"
 fi
+echo "  - 環境別 backend.hcl ファイル (dev/stg/prod)"
+echo "  - レガシー backend.hcl ファイル"
 echo ""
 echo "💡 注意事項:"
 echo "  - Terraformのstate ファイルは削除されました"
 echo "  - 今後terraform操作を行う場合は、setup.sh を再実行してください"
 echo "  - ローカルの .terraform ディレクトリも削除することを推奨します:"
-echo "    rm -rf .terraform/ .terraform.lock.hcl"
+echo "    rm -rf terraform/.terraform/ terraform/.terraform.lock.hcl"
+echo "    rm -rf terraform/environments/*/.terraform/ terraform/environments/*/.terraform.lock.hcl"
