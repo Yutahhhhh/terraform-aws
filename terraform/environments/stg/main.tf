@@ -75,8 +75,9 @@ module "database" {
 
   project_name          = var.project_name
   environment           = var.environment
+  vpc_id                = module.network.vpc_id
   private_subnet_ids    = module.network.private_subnet_ids
-  rds_security_group_id = module.security.database_security_group_id
+  ecs_security_group_id = module.compute.ecs_security_group_id
 
   db_engine_version           = "15.8"
   db_instance_class           = "db.t3.small"
@@ -104,8 +105,9 @@ module "compute" {
   min_capacity = 2
   max_capacity = 4
 
+  vpc_id                = module.network.vpc_id
   private_subnet_ids    = module.network.private_subnet_ids
-  ecs_security_group_id = module.security.ecs_security_group_id
+  alb_security_group_id = module.loadbalancer.alb_security_group_id
   target_group_arn      = module.loadbalancer.target_group_arn
   db_secret_arn         = module.database.db_secret_arn
 
@@ -118,18 +120,17 @@ module "compute" {
 module "loadbalancer" {
   source = "../../modules/loadbalancer"
 
-  project_name          = var.project_name
-  environment           = var.environment
-  vpc_id                = module.network.vpc_id
-  public_subnet_ids     = module.network.public_subnet_ids
-  alb_security_group_id = module.security.alb_security_group_id
+  project_name      = var.project_name
+  environment       = var.environment
+  vpc_id            = module.network.vpc_id
+  public_subnet_ids = module.network.public_subnet_ids
 
-  target_port        = 3000
-  health_check_path  = "/health"
-  enable_https       = var.alb_certificate_arn != ""
-  certificate_arn    = var.alb_certificate_arn
-  enable_access_logs = var.enable_alb_access_logs
-  access_logs_bucket = var.enable_alb_access_logs ? module.storage.alb_logs_bucket_name : null
+  target_port         = 3000
+  health_check_path   = "/health"
+  enable_https        = var.alb_certificate_arn != ""
+  certificate_arn     = var.alb_certificate_arn
+  enable_access_logs  = var.enable_alb_access_logs
+  access_logs_bucket  = var.enable_alb_access_logs ? module.storage.alb_logs_bucket_name : null
   enable_xray_tracing = var.enable_xray_tracing
 }
 

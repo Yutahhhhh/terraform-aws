@@ -47,3 +47,8 @@ output "ecs_task_role_name" {
   description = "ECSタスクロール名"
   value       = aws_iam_role.ecs_task_role.name
 }
+
+output "ecs_security_group_id" {
+  description = "ECSセキュリティグループID"
+  value       = aws_security_group.ecs.id
+}

@@ -23,11 +23,6 @@ variable "public_subnet_ids" {
   type        = list(string)
 }
 
-variable "alb_security_group_id" {
-  description = "ALB用セキュリティグループID"
-  type        = string
-}
-
 # ターゲットグループ設定
 variable "target_port" {
   description = "ターゲットポート番号"

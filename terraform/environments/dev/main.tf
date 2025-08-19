@@ -47,11 +47,41 @@ module "network" {
 module "security" {
   source = "../../modules/security"
 
+  # 基本設定
   project_name         = var.project_name
   environment          = var.environment
   vpc_id               = module.network.vpc_id
   vpc_cidr_block       = var.vpc_cidr
   enable_vpc_endpoints = false
+  
+  # セキュリティ機能の有効化
+  enable_waf                   = var.enable_waf
+  enable_guardduty             = var.enable_guardduty
+  enable_config                = var.enable_config
+  
+  # WAF設定
+  waf_rate_limit               = var.waf_rate_limit
+  allowed_countries            = var.allowed_countries
+  
+  # GuardDuty設定
+  guardduty_finding_frequency  = var.guardduty_finding_frequency
+  guardduty_severity_threshold = var.guardduty_severity_threshold
+  enable_s3_protection         = var.enable_s3_protection
+  enable_malware_protection    = var.enable_malware_protection
+  
+  # アクセス制御
+  allowed_cidr_blocks          = var.allowed_cidr_blocks
+  
+  # 既存リソースとの連携
+  alb_arn               = module.loadbalancer.alb_arn
+  alb_security_group_id = module.loadbalancer.alb_security_group_id
+  ecs_security_group_id = module.compute.ecs_security_group_id
+  rds_security_group_id = var.enable_rds ? module.database[0].security_group_id : ""
+  ecs_task_role_id      = module.compute.ecs_task_role_name
+  app_bucket_arn        = module.storage.frontend_bucket_arn
+  log_group_arn         = length(module.monitoring) > 0 ? module.monitoring[0].log_group_arn : ""
+  alarm_sns_topic_arn   = length(module.monitoring) > 0 ? module.monitoring[0].sns_topic_arn : ""
+  enable_rds            = var.enable_rds
 }
 
 # Storage Module
@@ -76,8 +106,9 @@ module "database" {
 
   project_name          = var.project_name
   environment           = var.environment
+  vpc_id                = module.network.vpc_id
   private_subnet_ids    = module.network.private_subnet_ids
-  rds_security_group_id = module.security.database_security_group_id
+  ecs_security_group_id = module.compute.ecs_security_group_id
 
   db_engine_version           = "15.8"
   db_instance_class           = "db.t3.micro"
@@ -105,8 +136,9 @@ module "compute" {
   min_capacity = 1
   max_capacity = 2
 
+  vpc_id                = module.network.vpc_id
   private_subnet_ids    = module.network.private_subnet_ids
-  ecs_security_group_id = module.security.ecs_security_group_id
+  alb_security_group_id = module.loadbalancer.alb_security_group_id
   target_group_arn      = module.loadbalancer.target_group_arn
   db_secret_arn         = var.enable_rds && length(module.database) > 0 ? module.database[0].db_secret_arn : ""
 
@@ -119,18 +151,17 @@ module "compute" {
 module "loadbalancer" {
   source = "../../modules/loadbalancer"
 
-  project_name          = var.project_name
-  environment           = var.environment
-  vpc_id                = module.network.vpc_id
-  public_subnet_ids     = module.network.public_subnet_ids
-  alb_security_group_id = module.security.alb_security_group_id
+  project_name      = var.project_name
+  environment       = var.environment
+  vpc_id            = module.network.vpc_id
+  public_subnet_ids = module.network.public_subnet_ids
 
-  target_port        = 3000
-  health_check_path  = "/health"
-  enable_https       = var.alb_certificate_arn != ""
-  certificate_arn    = var.alb_certificate_arn
-  enable_access_logs = var.enable_alb_access_logs
-  access_logs_bucket = var.enable_alb_access_logs ? module.storage.alb_logs_bucket_name : null
+  target_port         = 3000
+  health_check_path   = "/health"
+  enable_https        = var.alb_certificate_arn != ""
+  certificate_arn     = var.alb_certificate_arn
+  enable_access_logs  = var.enable_alb_access_logs
+  access_logs_bucket  = var.enable_alb_access_logs ? module.storage.alb_logs_bucket_name : null
   enable_xray_tracing = var.enable_xray_tracing
 }
 

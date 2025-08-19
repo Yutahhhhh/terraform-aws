@@ -8,6 +8,31 @@ locals {
   }
 }
 
+# RDS Security Group
+resource "aws_security_group" "rds" {
+  name        = "${var.project_name}-${var.environment}-rds-sg"
+  description = "Security group for RDS database"
+  vpc_id      = var.vpc_id
+
+  # Inbound from ECS only
+  ingress {
+    description     = "PostgreSQL from ECS"
+    from_port       = 5432
+    to_port         = 5432
+    protocol        = "tcp"
+    security_groups = [var.ecs_security_group_id]
+  }
+
+  # No outbound rules needed for RDS
+
+  tags = merge(
+    local.common_tags,
+    {
+      Name = "${var.project_name}-${var.environment}-rds-sg"
+    }
+  )
+}
+
 # DB Subnet Group
 resource "aws_db_subnet_group" "main" {
   name       = "${var.project_name}-${var.environment}-db-subnet-group"
@@ -161,7 +186,7 @@ resource "aws_db_instance" "main" {
 
   # ネットワーク設定
   db_subnet_group_name   = aws_db_subnet_group.main.name
-  vpc_security_group_ids = [var.rds_security_group_id]
+  vpc_security_group_ids = [aws_security_group.rds.id]
   publicly_accessible    = false
 
   # 高可用性設定
@@ -210,7 +235,7 @@ resource "aws_db_proxy" "main" {
 
   role_arn               = aws_iam_role.rds_proxy[0].arn
   vpc_subnet_ids         = var.private_subnet_ids
-  vpc_security_group_ids = [var.rds_security_group_id]
+  vpc_security_group_ids = [aws_security_group.rds.id]
 
   idle_client_timeout = 1800
 

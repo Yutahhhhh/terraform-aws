@@ -491,3 +491,66 @@ variable "secrets_recovery_window_days" {
     error_message = "復旧期間は0から30日の間で設定してください。"
   }
 }
+
+# セキュリティ機能の有効化フラグ
+variable "enable_guardduty" {
+  description = "GuardDutyを有効にするか"
+  type        = bool
+  default     = false
+}
+
+variable "enable_config" {
+  description = "AWS Configを有効にするか"
+  type        = bool
+  default     = false
+}
+
+# WAF関連の設定
+variable "waf_rate_limit" {
+  description = "WAF rate limit per 5 minutes"
+  type        = number
+  default     = 5000  # 開発環境のデフォルト値
+}
+
+variable "allowed_countries" {
+  description = "List of allowed country codes"
+  type        = list(string)
+  default     = ["JP", "US"]  # 開発環境のデフォルト値
+}
+
+# GuardDuty関連の設定
+variable "guardduty_finding_frequency" {
+  description = "GuardDuty finding publishing frequency"
+  type        = string
+  default     = "ONE_HOUR"  # 開発環境のデフォルト値
+  validation {
+    condition = contains([
+      "FIFTEEN_MINUTES",
+      "ONE_HOUR",
+      "SIX_HOURS"
+    ], var.guardduty_finding_frequency)
+    error_message = "有効な頻度を選択してください"
+  }
+}
+
+variable "guardduty_severity_threshold" {
+  description = "GuardDuty severity threshold for notifications (1-8, 1=lowest, 8=highest)"
+  type        = number
+  default     = 7  # 開発環境のデフォルト値
+  validation {
+    condition     = var.guardduty_severity_threshold >= 1 && var.guardduty_severity_threshold <= 8
+    error_message = "脅威レベルは1から8の間で設定してください"
+  }
+}
+
+variable "enable_s3_protection" {
+  description = "Enable S3 protection in GuardDuty"
+  type        = bool
+  default     = false  # 開発環境のデフォルト値
+}
+
+variable "enable_malware_protection" {
+  description = "Enable malware protection in GuardDuty"
+  type        = bool
+  default     = false  # 開発環境のデフォルト値
+}

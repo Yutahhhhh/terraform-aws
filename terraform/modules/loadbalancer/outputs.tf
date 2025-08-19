@@ -82,3 +82,8 @@ output "alb_arn_suffix" {
   description = "ALB ARNサフィックス"
   value       = aws_lb.main.arn_suffix
 }
+
+output "alb_security_group_id" {
+  description = "ALBセキュリティグループID"
+  value       = aws_security_group.alb.id
+}

@@ -112,13 +112,18 @@ variable "off_hours_max_capacity" {
 }
 
 # 外部リソース参照
+variable "vpc_id" {
+  description = "VPC ID"
+  type        = string
+}
+
 variable "private_subnet_ids" {
   description = "プライベートサブネットIDのリスト"
   type        = list(string)
 }
 
-variable "ecs_security_group_id" {
-  description = "ECS用セキュリティグループID"
+variable "alb_security_group_id" {
+  description = "ALB用セキュリティグループID"
   type        = string
 }
 

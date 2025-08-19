@@ -53,6 +53,11 @@ output "db_proxy_endpoint" {
   value       = var.enable_rds_proxy ? aws_db_proxy.main[0].endpoint : null
 }
 
+output "security_group_id" {
+  description = "RDSセキュリティグループID"
+  value       = aws_security_group.rds.id
+}
+
 output "db_proxy_arn" {
   description = "RDS Proxy ARN"
   value       = var.enable_rds_proxy ? aws_db_proxy.main[0].arn : null
