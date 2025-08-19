@@ -254,7 +254,7 @@ variable "enable_nacl" {
 variable "allowed_cidr_blocks" {
   description = "許可するCIDRブロック"
   type        = list(string)
-  default     = ["0.0.0.0/0"]
+  default     = ["203.0.113.0/24"]  # 本番環境では特定のIPアドレスからのアクセスを許可
 }
 
 variable "enable_s3_versioning" {
@@ -496,4 +496,67 @@ variable "skip_final_snapshot" {
   description = "削除時の最終スナップショットをスキップするか"
   type        = bool
   default     = false  # 本番環境ではスナップショットを作成
+}
+
+# セキュリティ機能の有効化フラグ
+variable "enable_guardduty" {
+  description = "GuardDutyを有効にするか"
+  type        = bool
+  default     = true
+}
+
+variable "enable_config" {
+  description = "AWS Configを有効にするか"
+  type        = bool
+  default     = true
+}
+
+# WAF関連の設定
+variable "waf_rate_limit" {
+  description = "WAF rate limit per 5 minutes"
+  type        = number
+  default     = 2000
+}
+
+variable "allowed_countries" {
+  description = "List of allowed country codes"
+  type        = list(string)
+  default     = ["JP"]
+}
+
+# GuardDuty関連の設定
+variable "guardduty_finding_frequency" {
+  description = "GuardDuty finding publishing frequency"
+  type        = string
+  default     = "FIFTEEN_MINUTES"
+  validation {
+    condition = contains([
+      "FIFTEEN_MINUTES",
+      "ONE_HOUR",
+      "SIX_HOURS"
+    ], var.guardduty_finding_frequency)
+    error_message = "有効な頻度を選択してください"
+  }
+}
+
+variable "guardduty_severity_threshold" {
+  description = "GuardDuty severity threshold for notifications (1-8, 1=lowest, 8=highest)"
+  type        = number
+  default     = 4
+  validation {
+    condition     = var.guardduty_severity_threshold >= 1 && var.guardduty_severity_threshold <= 8
+    error_message = "脅威レベルは1から8の間で設定してください"
+  }
+}
+
+variable "enable_s3_protection" {
+  description = "Enable S3 protection in GuardDuty"
+  type        = bool
+  default     = true
+}
+
+variable "enable_malware_protection" {
+  description = "Enable malware protection in GuardDuty"
+  type        = bool
+  default     = true
 }

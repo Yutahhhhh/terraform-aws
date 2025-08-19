@@ -10,6 +10,38 @@ locals {
 # Data source for current AWS account
 data "aws_caller_identity" "current" {}
 
+# ECS Security Group
+resource "aws_security_group" "ecs" {
+  name        = "${var.project_name}-${var.environment}-ecs-sg"
+  description = "Security group for ECS tasks"
+  vpc_id      = var.vpc_id
+
+  # Inbound from ALB only
+  ingress {
+    description     = "HTTP from ALB"
+    from_port       = var.container_port
+    to_port         = var.container_port
+    protocol        = "tcp"
+    security_groups = [var.alb_security_group_id]
+  }
+
+  # All outbound traffic
+  egress {
+    description = "All outbound traffic"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = merge(
+    local.common_tags,
+    {
+      Name = "${var.project_name}-${var.environment}-ecs-sg"
+    }
+  )
+}
+
 # ECR Repository
 resource "aws_ecr_repository" "app" {
   name                 = "${var.project_name}-${var.environment}-app"
@@ -354,7 +386,7 @@ resource "aws_ecs_service" "app" {
   launch_type     = "FARGATE"
 
   network_configuration {
-    security_groups  = [var.ecs_security_group_id]
+    security_groups  = [aws_security_group.ecs.id]
     subnets          = var.private_subnet_ids
     assign_public_ip = false
   }

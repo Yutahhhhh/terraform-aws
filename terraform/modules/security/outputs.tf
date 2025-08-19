@@ -1,39 +1,38 @@
-output "alb_security_group_id" {
-  description = "ALB用セキュリティグループID"
-  value       = aws_security_group.alb.id
+# WAF関連
+output "waf_web_acl_id" {
+  description = "WAF WebACL ID"
+  value       = var.enable_waf ? aws_wafv2_web_acl.main[0].id : ""
 }
 
-output "ecs_security_group_id" {
-  description = "ECS用セキュリティグループID"
-  value       = aws_security_group.ecs.id
+output "waf_web_acl_arn" {
+  description = "WAF WebACL ARN"
+  value       = var.enable_waf ? aws_wafv2_web_acl.main[0].arn : ""
 }
 
-output "rds_security_group_id" {
-  description = "RDS用セキュリティグループID"
-  value       = aws_security_group.rds.id
+# GuardDuty関連
+output "guardduty_detector_id" {
+  description = "GuardDuty Detector ID"
+  value       = var.enable_guardduty ? aws_guardduty_detector.main[0].id : ""
 }
 
-output "vpc_endpoint_security_group_id" {
-  description = "VPCエンドポイント用セキュリティグループID"
-  value       = var.enable_vpc_endpoints ? aws_security_group.vpc_endpoint[0].id : null
+# Config関連
+output "config_recorder_name" {
+  description = "Config Recorder Name"
+  value       = var.enable_config ? aws_config_configuration_recorder.main[0].name : ""
 }
 
-output "alb_security_group_arn" {
-  description = "ALB用セキュリティグループARN"
-  value       = aws_security_group.alb.arn
+output "config_required_tags_rule_name" {
+  description = "Config Required Tags Rule Name"
+  value       = var.enable_config ? aws_config_config_rule.required_tags[0].name : ""
 }
 
-output "ecs_security_group_arn" {
-  description = "ECS用セキュリティグループARN"
-  value       = aws_security_group.ecs.arn
+output "config_s3_bucket_name" {
+  description = "Config S3 Bucket Name"
+  value       = var.enable_config ? aws_s3_bucket.config[0].id : ""
 }
 
-output "rds_security_group_arn" {
-  description = "RDS用セキュリティグループARN"
-  value       = aws_security_group.rds.arn
-}
-
-output "database_security_group_id" {
-  description = "データベース用セキュリティグループID（RDSと同じ）"
-  value       = aws_security_group.rds.id
+# IAM関連
+output "developer_readonly_policy_arn" {
+  description = "Developer Read-only Policy ARN"
+  value       = aws_iam_policy.developer_readonly.arn
 }

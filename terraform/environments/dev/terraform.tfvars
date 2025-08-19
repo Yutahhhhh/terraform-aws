@@ -16,6 +16,8 @@ enable_vpc_flow_logs        = false # VPC Flow Logsを無効化（コスト削�
 enable_alb_access_logs      = false # ALBアクセスログを無効化（コスト削減）
 enable_xray_tracing         = false # X-Rayトレーシングを無効化（コスト削減）
 enable_cloudfront_logging   = false # CloudFrontログを無効化（コスト削減）
+enable_guardduty = true
+enable_config    = true
 
 # アラーム・監視
 enable_cpu_alarm            = false # CPUアラームを無効化（開発環境）

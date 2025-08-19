@@ -13,13 +13,18 @@ variable "environment" {
 }
 
 # ネットワーク設定
+variable "vpc_id" {
+  description = "VPC ID"
+  type        = string
+}
+
 variable "private_subnet_ids" {
   description = "プライベートサブネットIDのリスト"
   type        = list(string)
 }
 
-variable "rds_security_group_id" {
-  description = "RDS用セキュリティグループID"
+variable "ecs_security_group_id" {
+  description = "ECS用セキュリティグループID"
   type        = string
 }
 
