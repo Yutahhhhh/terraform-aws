@@ -330,12 +330,6 @@ variable "deletion_protection" {
   default     = false
 }
 
-variable "skip_final_snapshot" {
-  description = "最終スナップショットをスキップするか"
-  type        = bool
-  default     = false
-}
-
 variable "enable_auto_scaling" {
   description = "Auto Scalingを有効にするか"
   type        = bool

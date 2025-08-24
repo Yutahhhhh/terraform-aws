@@ -319,19 +319,63 @@ resource "aws_iam_role_policy" "config" {
   })
 }
 
-# Delivery Channel
-resource "aws_config_delivery_channel" "main" {
+# S3バケットポリシー（Config用）
+resource "aws_s3_bucket_policy" "config" {
   count = var.enable_config ? 1 : 0
 
-  name           = "${var.project_name}-${var.environment}-channel"
-  s3_bucket_name = aws_s3_bucket.config[0].bucket
+  bucket = aws_s3_bucket.config[0].id
 
-  snapshot_delivery_properties {
-    delivery_frequency = "TwentyFour_Hours"
-  }
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "AWSConfigBucketPermissionsCheck"
+        Effect = "Allow"
+        Principal = {
+          Service = "config.amazonaws.com"
+        }
+        Action   = "s3:GetBucketAcl"
+        Resource = aws_s3_bucket.config[0].arn
+        Condition = {
+          StringEquals = {
+            "AWS:SourceAccount" = data.aws_caller_identity.current.account_id
+          }
+        }
+      },
+      {
+        Sid    = "AWSConfigBucketExistenceCheck"
+        Effect = "Allow"
+        Principal = {
+          Service = "config.amazonaws.com"
+        }
+        Action   = "s3:ListBucket"
+        Resource = aws_s3_bucket.config[0].arn
+        Condition = {
+          StringEquals = {
+            "AWS:SourceAccount" = data.aws_caller_identity.current.account_id
+          }
+        }
+      },
+      {
+        Sid    = "AWSConfigBucketDelivery"
+        Effect = "Allow"
+        Principal = {
+          Service = "config.amazonaws.com"
+        }
+        Action   = "s3:PutObject"
+        Resource = "${aws_s3_bucket.config[0].arn}/*"
+        Condition = {
+          StringEquals = {
+            "s3:x-amz-acl" = "bucket-owner-full-control"
+            "AWS:SourceAccount" = data.aws_caller_identity.current.account_id
+          }
+        }
+      }
+    ]
+  })
 }
 
-# Configuration Recorder
+# Configuration Recorderを先に作成
 resource "aws_config_configuration_recorder" "main" {
   count = var.enable_config ? 1 : 0
 
@@ -343,17 +387,37 @@ resource "aws_config_configuration_recorder" "main" {
     include_global_resource_types = true
   }
 
-  depends_on = [aws_config_delivery_channel.main]
+  depends_on = [aws_s3_bucket_policy.config]
 }
 
-# Configuration Recorderの開始
+# Delivery Channel（Configuration Recorderの後に作成）
+resource "aws_config_delivery_channel" "main" {
+  count = var.enable_config ? 1 : 0
+
+  name           = "${var.project_name}-${var.environment}-channel"
+  s3_bucket_name = aws_s3_bucket.config[0].bucket
+
+  snapshot_delivery_properties {
+    delivery_frequency = "TwentyFour_Hours"
+  }
+
+  depends_on = [
+    aws_config_configuration_recorder.main,
+    aws_s3_bucket_policy.config
+  ]
+}
+
+# Configuration Recorderの開始（最後に実行）
 resource "aws_config_configuration_recorder_status" "main" {
   count = var.enable_config ? 1 : 0
 
   name       = aws_config_configuration_recorder.main[0].name
   is_enabled = true
 
-  depends_on = [aws_config_configuration_recorder.main]
+  depends_on = [
+    aws_config_configuration_recorder.main,
+    aws_config_delivery_channel.main
+  ]
 }
 
 # Configルール - 必須タグの確認
@@ -410,14 +474,14 @@ resource "aws_config_config_rule" "rds_encryption" {
 
 # ECSタスクロールの最適化（既存のタスクロールに追加ポリシー）
 resource "aws_iam_role_policy" "ecs_task_optimized" {
-  count = var.ecs_task_role_id != "" ? 1 : 0
+  count = var.ecs_task_role_id != "" && var.app_bucket_arn != "" ? 1 : 0
 
   name = "${var.project_name}-${var.environment}-ecs-task-optimized"
   role = var.ecs_task_role_id
 
   policy = jsonencode({
     Version = "2012-10-17"
-    Statement = [
+    Statement = concat([
       {
         Sid    = "S3SpecificBucketAccess"
         Effect = "Allow"
@@ -440,6 +504,16 @@ resource "aws_iam_role_policy" "ecs_task_optimized" {
         ]
       },
       {
+        Sid    = "XRayAccess"
+        Effect = "Allow"
+        Action = [
+          "xray:PutTraceSegments",
+          "xray:PutTelemetryRecords"
+        ]
+        Resource = "*"
+      }
+    ], var.log_group_arn != "" ? [
+      {
         Sid    = "CloudWatchLogsAccess"
         Effect = "Allow"
         Action = [
@@ -449,17 +523,8 @@ resource "aws_iam_role_policy" "ecs_task_optimized" {
         Resource = [
           "${var.log_group_arn}:*"
         ]
-      },
-      {
-        Sid    = "XRayAccess"
-        Effect = "Allow"
-        Action = [
-          "xray:PutTraceSegments",
-          "xray:PutTelemetryRecords"
-        ]
-        Resource = "*"
       }
-    ]
+    ] : [])
   })
 }
 
